@@ -1,0 +1,96 @@
+
+# import pandas as pd
+# import warnings
+# warnings.simplefilter(action='ignore', category=FutureWarning)
+
+
+# df = pd.read_csv("../input/eticaret-urun-yorumlari/e-ticaret_urun_yorumlari.csv",delimiter=';')
+# dfkod.py
+# df.isna().value_counts()
+# df.isna().value_counts()
+# df['Yeni Metin'] = df['Metin']
+# #buyuk-kucuk donusumu
+# df['Yeni Metin'] = df['Yeni Metin'].apply(lambda x: " ".join(x.lower() for x in x.split()))
+# #noktalama işaretleri
+# df['Yeni Metin'] = df['Yeni Metin'].str.replace('[^\w\s]','')
+# #sayılar
+# df['Yeni Metin'] = df['Yeni Metin'].str.replace('\d','')
+# #stopwords
+# import nltk
+# #nltk.download('stopwords')
+# from nltk.corpus import stopwords
+# sw = stopwords.words('turkish')
+# df['Yeni Metin'] = df['Yeni Metin'].apply(lambda x: " ".join(x for x in x.split() if x not in sw))
+
+# import snowballstemmer
+
+# stemmer = snowballstemmer.stemmer('turkish')
+# print(stemmer.stemWords("teşekkürler".split()))
+# df["Kök Metin"]=df["Yeni Metin"].apply(lambda x: " ".join([stemmer.stemWord(word) for word in x.split()]))
+# df[["Yeni Metin",'Kök Metin']][:10]
+
+# tf = (df["Kök Metin"]).apply(lambda x: 
+#                              pd.value_counts(x.split(" "))).sum(axis = 0).reset_index()
+
+# tf
+
+# from sklearn.feature_extraction.text import TfidfVectorizer
+
+
+# vectorizer = TfidfVectorizer()
+# Xtf = vectorizer.fit_transform(df["Kök Metin"])
+
+# tokens = vectorizer.get_feature_names()
+
+# tf_idf = pd.DataFrame(data = Xtf.toarray(), columns = tokens)
+
+# print(tf_idf)
+
+# from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
+# from sklearn.model_selection import cross_val_score 
+# from sklearn import model_selection
+# from sklearn import naive_bayes
+
+# train_x, test_x, train_y, test_y = model_selection.train_test_split(tf_idf,
+#                                                                    df["Durum"],
+#                                                                     test_size=0.30,
+#                                                                     random_state = 42
+#                                                                     )
+
+
+# nb_multi = naive_bayes.MultinomialNB()
+# nb_model_multi = nb_multi.fit(train_x,train_y)
+# y_pred_nb_multi=nb_model_multi.predict(test_x)
+# print("Multinominal Accuracy:", accuracy_score(test_y, y_pred_nb_multi, normalize=True))
+# print(classification_report(test_y, y_pred_nb_multi))
+
+# y_pred_nb_multi_train=nb_model_multi.predict(train_x)
+# print("Multinominal train Accuracy:", accuracy_score(train_y, y_pred_nb_multi_train, normalize=True))
+# print(classification_report(train_y, y_pred_nb_multi_train))
+
+# print("------------------------------------------------------------------------------------------")
+
+# print("test cross val skor:" , cross_val_score(nb_model_multi, test_x, test_y, cv = 10).mean())
+
+# print("train cross val skor:" ,cross_val_score(nb_model_multi, train_x, train_y, cv = 10).mean())
+
+# yeni_yorum = pd.Series("168 boyum 83 kg yum gerçekten üzerime şahane oldu ve çok beğendim  çok güzel teşekkürler") #olumlu
+
+# yeni_yorum2 = pd.Series("Yanlış elbise göndermişler. Bu elbiseyle alakası yok") #olumsuz
+
+# yeni_yorum3 = pd.Series("az kalın olabilirdi") #nötr
+
+# yeni_yorum = vectorizer.transform(yeni_yorum)
+# yeni_yorum
+
+# nb_model_multi.predict(yeni_yorum)
+
+# yeni_yorum2 = vectorizer.transform(yeni_yorum2)
+# yeni_yorum2
+
+# nb_model_multi.predict(yeni_yorum2)
+
+# yeni_yorum3 = vectorizer.transform(yeni_yorum3)
+# yeni_yorum3
+
+# nb_model_multi.predict(yeni_yorum3)
